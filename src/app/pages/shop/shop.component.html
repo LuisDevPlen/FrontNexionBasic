@@ -1,0 +1,117 @@
+<section class="shop">
+  <header class="shop__head">
+    <h1>Loja</h1>
+    <p class="muted">Catálogo de produtos — clique para ver detalhes, quantidade e adicionais</p>
+  </header>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  @if (grupos().length) {
+    <nav class="shop__cat-nav" aria-label="Ir para categoria">
+      @for (g of grupos(); track g.anchorId) {
+        <button type="button" class="shop__cat-link" (click)="irParaCategoria(g.anchorId)">
+          {{ g.nome }}
+        </button>
+      }
+    </nav>
+  }
+
+  @for (g of grupos(); track g.anchorId) {
+    <section
+      class="shop__row"
+      [id]="g.anchorId"
+      [attr.aria-labelledby]="g.titleId"
+      tabindex="-1"
+    >
+      <h2 class="shop__cat-title" [id]="g.titleId">{{ g.nome }}</h2>
+      <div class="grid">
+        @for (p of g.produtos; track p.id) {
+          <article class="card">
+            <button type="button" class="card__open" (click)="abrirProduto(p)">
+              @if (p.imagem_url) {
+                <img [src]="p.imagem_url" [alt]="p.nome" width="400" height="280" loading="lazy" />
+              } @else {
+                <div class="card__ph"></div>
+              }
+              <div class="card__body">
+                <span class="pill">{{ p.categoria_nome ?? p.categoria ?? 'Geral' }}</span>
+                <h3 class="card__title">{{ p.nome }}</h3>
+                <p class="desc">{{ p.descricao }}</p>
+                @if ((p.adicionais?.length ?? 0) > 0) {
+                  <p class="hint">{{ p.adicionais?.length }} adicional(is) disponível(is)</p>
+                }
+                <div class="row">
+                  <strong>{{ preco(p) }}</strong>
+                  <span class="btn btn--inline">Ver opções</span>
+                </div>
+              </div>
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+</section>
+
+@if (modalProduto(); as p) {
+  <div class="modal-backdrop" (click)="fecharModal()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button type="button" class="modal__close" (click)="fecharModal()" aria-label="Fechar">×</button>
+    <h2 id="modal-title">{{ p.nome }}</h2>
+    <p class="muted">{{ p.descricao }}</p>
+    <p class="modal__base">Preço base (unidade): <strong>{{ preco(p) }}</strong></p>
+
+    <label class="modal__qty">
+      Quantidade do produto
+      <input
+        type="number"
+        min="1"
+        max="9999"
+        step="1"
+        [value]="modalQtd()"
+        (input)="onModalQtdInput($event)"
+      />
+    </label>
+
+    @if (p.adicionais?.length) {
+      <fieldset class="modal__extras">
+        <legend>Adicionais por unidade do produto (quantidade cada)</legend>
+        @for (a of p.adicionais; track a.id) {
+          <div class="modal__adic-row">
+            <span class="modal__adic-name">{{ a.nome }}</span>
+            <span class="muted">+{{ precoAdicional(a) }}/un.</span>
+            <input
+              type="number"
+              min="0"
+              max="999"
+              step="1"
+              class="modal__adic-qty"
+              [value]="qtdAdicional(a.id)"
+              (input)="onAdicionalQtd(a.id, $event)"
+              title="Quantidade deste adicional por unidade do produto"
+            />
+          </div>
+        }
+      </fieldset>
+    } @else {
+      <p class="muted">Este produto não tem adicionais cadastrados.</p>
+    }
+
+    <div class="modal__total">
+      <span>Total deste pedido no carrinho</span>
+      <strong>{{ totalModal() }}</strong>
+    </div>
+
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" (click)="fecharModal()">Cancelar</button>
+      <button type="button" class="btn btn--primary" (click)="confirmarAoCarrinho()">
+        Adicionar ao carrinho
+      </button>
+    </div>
+  </div>
+}

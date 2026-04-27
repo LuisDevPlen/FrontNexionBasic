@@ -1,0 +1,54 @@
+<section class="admin-page">
+  <nav class="admin-nav">
+    <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+    <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+    <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+    <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+  </nav>
+
+  <h1>Categorias</h1>
+  <p class="muted">Cadastro e listagem de categorias de produtos.</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  <form class="form" (ngSubmit)="salvar()">
+    <h2>Nova categoria</h2>
+    <div class="row row--inline">
+      <label class="grow">
+        Nome
+        <input type="text" name="nome" [(ngModel)]="novaNome" placeholder="Ex.: Eletrônicos" />
+      </label>
+      <button type="submit" class="btn btn--primary">Cadastrar</button>
+    </div>
+  </form>
+
+  <h2 class="mt">Listagem</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of lista(); track c.id) {
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td class="actions">
+            <button type="button" class="btn btn--ghost btn--sm" (click)="remover(c)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="2" class="muted">Nenhuma categoria cadastrada.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

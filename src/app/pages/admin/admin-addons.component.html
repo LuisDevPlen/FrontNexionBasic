@@ -1,0 +1,68 @@
+<section class="admin-page">
+  <nav class="admin-nav">
+    <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+    <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+    <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+    <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+  </nav>
+
+  <h1>Adicionais</h1>
+  <p class="muted">Cadastro e listagem de adicionais disponíveis para vincular aos produtos.</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  <form class="form" (ngSubmit)="salvar()">
+    <h2>Novo adicional</h2>
+    <div class="grid2">
+      <label>
+        Nome
+        <input type="text" name="nome" [(ngModel)]="nome" required />
+      </label>
+      <label>
+        Preço
+        <input type="number" name="preco" step="0.01" min="0" [(ngModel)]="preco" required />
+      </label>
+    </div>
+    <label>
+      Descrição (opcional)
+      <textarea name="desc" rows="2" [(ngModel)]="descricao"></textarea>
+    </label>
+    <div class="row">
+      <button type="submit" class="btn btn--primary">Cadastrar</button>
+    </div>
+  </form>
+
+  <h2 class="mt">Listagem</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Descrição</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (a of lista(); track a.id) {
+        <tr>
+          <td>{{ a.nome }}</td>
+          <td>{{ fmtPreco(a) }}</td>
+          <td>{{ a.descricao ?? '—' }}</td>
+          <td class="actions">
+            <button type="button" class="btn btn--ghost btn--sm" (click)="remover(a)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="muted">Nenhum adicional cadastrado.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

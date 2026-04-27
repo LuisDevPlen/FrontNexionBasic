@@ -1,0 +1,120 @@
+<section>
+  <h1>Carrinho</h1>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  @if (!itens().length && !erro()) {
+    <p class="muted">Seu carrinho está vazio. <a routerLink="/loja">Ver loja</a></p>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Preço unit.</th>
+          <th>Qtd</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (i of itens(); track i.id) {
+          <tr>
+            <td>
+              <div>{{ i.nome }}</div>
+              @if (i.adicionais_selecionados?.length) {
+                <div class="extras">
+                  @for (a of i.adicionais_selecionados; track a.id) {
+                    <span>+ {{ a.quantidade ?? 1 }}× {{ a.nome }}</span>
+                  }
+                </div>
+              }
+            </td>
+            <td>{{ fmt(i.preco_unitario_total ?? i.preco) }}</td>
+            <td>
+              <input
+                type="number"
+                min="1"
+                class="qty"
+                [ngModel]="i.quantidade"
+                (ngModelChange)="updateQty(i, $event)"
+              />
+            </td>
+            <td>{{ subtotal(i) }}</td>
+            <td><button type="button" class="btn btn--ghost" (click)="remove(i)">Remover</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="checkout-block">
+      <h2 class="checkout-block__title">Entrega</h2>
+      <label class="field">
+        <span>Endereço para entrega</span>
+        <textarea
+          class="textarea"
+          rows="4"
+          placeholder="Rua, número, complemento, bairro, cidade…"
+          [ngModel]="enderecoEntrega()"
+          (ngModelChange)="enderecoEntrega.set($event)"
+        ></textarea>
+      </label>
+      <div class="checkout-block__actions">
+        <button
+          type="button"
+          class="btn btn--ghost"
+          [disabled]="profileSaving()"
+          (click)="salvarEnderecoPerfil()"
+        >
+          {{ profileSaving() ? 'Salvando…' : 'Salvar endereço no perfil' }}
+        </button>
+      </div>
+      @if (profileMsg()) {
+        <p class="muted checkout-block__hint">{{ profileMsg() }}</p>
+      }
+
+      <h2 class="checkout-block__title">Pagamento</h2>
+      <p class="muted checkout-block__lead">Escolha como vai pagar na entrega ou retirada.</p>
+      <div class="radio-row">
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="forma_pagamento"
+            [checked]="formaPagamento() === 'dinheiro'"
+            (change)="setForma('dinheiro')"
+          />
+          Dinheiro
+        </label>
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="forma_pagamento"
+            [checked]="formaPagamento() === 'cartao'"
+            (change)="setForma('cartao')"
+          />
+          Cartão
+        </label>
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="forma_pagamento"
+            [checked]="formaPagamento() === 'pix'"
+            (change)="setForma('pix')"
+          />
+          PIX
+        </label>
+      </div>
+    </div>
+
+    <div class="foot">
+      <strong>Total: {{ fmt(total()) }}</strong>
+      <button type="button" class="btn btn--primary" [disabled]="!itens().length || checkoutLoading()" (click)="checkout()">
+        {{ checkoutLoading() ? 'Processando…' : 'Finalizar pedido' }}
+      </button>
+    </div>
+  }
+</section>

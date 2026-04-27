@@ -1,0 +1,36 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.badge.ok {
+  background: #e6f4ea;
+  color: #137333;
+}
+
+.badge.bad {
+  background: #fce8e6;
+  color: #c5221f;
+}
+
+.badge.pend {
+  background: #fff8e1;
+  color: #b06000;
+}

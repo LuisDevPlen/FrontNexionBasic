@@ -1,0 +1,28 @@
+<div class="panel">
+  <h1>Criar conta</h1>
+  <p class="muted">Conta com perfil de cliente</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+
+  <form (ngSubmit)="submit()">
+    <label>
+      Nome
+      <input type="text" name="nome" [(ngModel)]="nome" required />
+    </label>
+    <label>
+      E-mail
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" />
+    </label>
+    <label>
+      Senha
+      <input type="password" name="senha" [(ngModel)]="senha" required autocomplete="new-password" />
+    </label>
+    <button class="btn btn--primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Salvando…' : 'Cadastrar' }}
+    </button>
+  </form>
+
+  <p class="foot"><a routerLink="/login">Já tenho conta</a></p>
+</div>

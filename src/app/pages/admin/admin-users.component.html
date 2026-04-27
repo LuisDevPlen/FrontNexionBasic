@@ -1,0 +1,76 @@
+<section class="admin-page">
+  <nav class="admin-nav">
+    <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+    <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+    <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+    <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+  </nav>
+
+  <h1>Usuários</h1>
+  <p class="muted">Cadastre usuários e defina papéis (admin ou cliente)</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  <form class="form" (ngSubmit)="criar()">
+    <h2>Novo usuário</h2>
+    <div class="grid2">
+      <label>
+        Nome
+        <input type="text" [(ngModel)]="nome" name="nome" required />
+      </label>
+      <label>
+        E-mail
+        <input type="email" [(ngModel)]="email" name="email" required />
+      </label>
+    </div>
+    <div class="grid2">
+      <label>
+        Senha
+        <input type="password" [(ngModel)]="senha" name="senha" required />
+      </label>
+      <label>
+        Papel
+        <select [(ngModel)]="papel" name="papel">
+          <option value="cliente">Cliente</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>
+    </div>
+    <button class="btn btn--primary" type="submit">Cadastrar</button>
+  </form>
+
+  <h2 class="mt">Lista</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Papel</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of usuarios(); track u.id) {
+        <tr>
+          <td>{{ u.nome }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.papel }}</td>
+          <td class="actions">
+            @if (u.papel !== 'admin') {
+              <button type="button" class="btn btn--sm btn--ghost" (click)="alterarPapel(u, 'admin')">Tornar admin</button>
+            }
+            @if (u.papel !== 'cliente') {
+              <button type="button" class="btn btn--sm btn--ghost" (click)="alterarPapel(u, 'cliente')">Tornar cliente</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

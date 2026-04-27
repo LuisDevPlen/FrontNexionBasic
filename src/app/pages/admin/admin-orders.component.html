@@ -1,0 +1,69 @@
+<section class="admin-page">
+  <nav class="admin-nav">
+    <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+    <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+    <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+    <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+  </nav>
+
+  <h1>Gestão de pedidos</h1>
+  <p class="muted">Aprove ou rejeite pedidos pendentes</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  <table class="table">
+    <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Pagamento</th>
+          <th>Endereço</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+      @for (p of pedidos(); track p.id) {
+        <tr>
+          <td>#{{ p.id }}</td>
+          <td>{{ p.usuario_nome }}<br /><small class="muted">{{ p.usuario_email }}</small></td>
+          <td>{{ labelForma(p.forma_pagamento) }}</td>
+          <td class="addr-cell" [title]="p.endereco_entrega ?? ''">{{ truncateAddr(p.endereco_entrega) }}</td>
+          <td>{{ p.status }}</td>
+          <td>{{ fmt(p.total) }}</td>
+          <td>{{ p.created_at | date: 'short' }}</td>
+          <td class="actions">
+            @if (p.status === 'pendente') {
+              <button
+                type="button"
+                class="btn btn--primary btn--sm"
+                [disabled]="busyId() === p.id"
+                (click)="setStatus(p.id, 'aprovado')"
+              >
+                Aprovar
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost btn--sm"
+                [disabled]="busyId() === p.id"
+                (click)="setStatus(p.id, 'rejeitado')"
+              >
+                Rejeitar
+              </button>
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

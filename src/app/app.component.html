@@ -1,0 +1,30 @@
+<div class="shell">
+  <header class="top">
+    <a routerLink="/loja" class="brand">{{ title }}</a>
+    <nav class="nav">
+      <a routerLink="/loja" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Loja</a>
+
+      @if (auth.token()) {
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+          <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+          <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+          <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+          <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+        } @else {
+          <a routerLink="/carrinho" routerLinkActive="active">Carrinho</a>
+          <a routerLink="/meus-pedidos" routerLinkActive="active">Meus pedidos</a>
+        }
+        <span class="who">{{ auth.user()?.nome }}</span>
+        <button type="button" class="btn btn--ghost" (click)="auth.logout()">Sair</button>
+      } @else {
+        <a routerLink="/login" routerLinkActive="active">Entrar</a>
+        <a routerLink="/cadastro" routerLinkActive="active">Cadastro</a>
+      }
+    </nav>
+  </header>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>

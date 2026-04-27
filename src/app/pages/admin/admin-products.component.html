@@ -1,0 +1,122 @@
+<section class="admin-page">
+  <nav class="admin-nav">
+    <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
+    <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
+    <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+    <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+    <a routerLink="/admin/usuarios" routerLinkActive="active">Usuários</a>
+  </nav>
+
+  <h1>Produtos</h1>
+  <p class="muted">
+    Cadastro e listagem de produtos. Cadastre
+    <a routerLink="/admin/categorias">categorias</a> e
+    <a routerLink="/admin/adicionais">adicionais</a> nas respectivas telas antes de vincular aqui.
+  </p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+  @if (msg()) {
+    <p class="alert">{{ msg() }}</p>
+  }
+
+  <form class="form" (ngSubmit)="save()">
+    <h2>{{ editing() ? 'Editar produto' : 'Novo produto' }}</h2>
+    <div class="grid2">
+      <label>
+        Nome
+        <input type="text" name="nome" [(ngModel)]="nome" required />
+      </label>
+      <label>
+        Preço
+        <input type="number" name="preco" step="0.01" min="0" [(ngModel)]="preco" required />
+      </label>
+    </div>
+    <label>
+      Descrição
+      <textarea name="desc" rows="2" [(ngModel)]="descricao"></textarea>
+    </label>
+    <div class="grid2">
+      <label>
+        Categoria
+        <select name="categoriaId" [(ngModel)]="categoriaId">
+          <option [ngValue]="''">— nenhuma —</option>
+          @for (c of categorias(); track c.id) {
+            <option [ngValue]="c.id">{{ c.nome }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        URL da imagem
+        <input type="url" name="img" [(ngModel)]="imagem_url" />
+      </label>
+    </div>
+    @if (adicionais().length) {
+      <fieldset class="checks">
+        <legend>Adicionais deste produto</legend>
+        <div class="checkgrid">
+          @for (a of adicionais(); track a.id) {
+            <label class="check">
+              <input
+                type="checkbox"
+                [checked]="isAdicionalChecked(a.id)"
+                (change)="toggleAdicional(a.id)"
+              />
+              {{ a.nome }} (+{{ fmtPreco(a.preco) }})
+            </label>
+          }
+        </div>
+      </fieldset>
+    } @else {
+      <p class="muted hint-box">
+        Nenhum adicional cadastrado. Adicione em <a routerLink="/admin/adicionais">Adicionais</a>.
+      </p>
+    }
+    <div class="row">
+      <button class="btn btn--primary" type="submit">{{ editing() ? 'Salvar alterações' : 'Cadastrar' }}</button>
+      @if (editing()) {
+        <button type="button" class="btn btn--ghost" (click)="cancelEdit()">Cancelar edição</button>
+      }
+    </div>
+  </form>
+
+  <h2 class="mt">Listagem</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Categoria</th>
+        <th>Adicionais</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of lista(); track p.id) {
+        <tr>
+          <td>{{ p.nome }}</td>
+          <td>{{ fmtProduto(p) }}</td>
+          <td>{{ categoriaLabel(p) }}</td>
+          <td class="cell-sm">
+            @if (p.adicionais?.length) {
+              @for (a of p.adicionais; track a.id) {
+                <span class="tag">{{ a.nome }}</span>
+              }
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+          <td class="actions">
+            <button type="button" class="btn btn--ghost btn--sm" (click)="startEdit(p)">Editar</button>
+            <button type="button" class="btn btn--ghost btn--sm" (click)="remove(p)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="muted">Nenhum produto cadastrado.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

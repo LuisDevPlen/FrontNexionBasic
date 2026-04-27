@@ -1,0 +1,24 @@
+<div class="panel">
+  <h1>Entrar</h1>
+  <p class="muted">Use seu e-mail e senha</p>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+
+  <form (ngSubmit)="submit()">
+    <label>
+      E-mail
+      <input type="email" name="email" [(ngModel)]="email" required autocomplete="username" />
+    </label>
+    <label>
+      Senha
+      <input type="password" name="senha" [(ngModel)]="senha" required autocomplete="current-password" />
+    </label>
+    <button class="btn btn--primary" type="submit" [disabled]="loading()">
+      {{ loading() ? 'Entrando…' : 'Entrar' }}
+    </button>
+  </form>
+
+  <p class="foot"><a routerLink="/cadastro">Criar conta</a></p>
+</div>

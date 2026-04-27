@@ -1,0 +1,38 @@
+<section>
+  <h1>Meus pedidos</h1>
+
+  @if (erro()) {
+    <p class="alert alert--err">{{ erro() }}</p>
+  }
+
+  @if (!pedidos().length && !erro()) {
+    <p class="muted">Nenhum pedido ainda.</p>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Pagamento</th>
+          <th>Endereço</th>
+          <th>Total</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of pedidos(); track p.id) {
+          <tr>
+            <td>#{{ p.id }}</td>
+            <td><span class="badge" [class]="statusClass(p.status)">{{ p.status }}</span></td>
+            <td>{{ labelForma(p.forma_pagamento) }}</td>
+            <td class="addr-cell" [title]="p.endereco_entrega ?? ''">{{ truncateAddr(p.endereco_entrega) }}</td>
+            <td>{{ fmt(p.total) }}</td>
+            <td>{{ p.created_at | date: 'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <p class="muted"><a routerLink="/loja">Continuar comprando</a></p>
+</section>
