@@ -1,53 +1,107 @@
 <section class="shop">
-  <header class="shop__head">
-    <h1>Loja</h1>
-    <p class="muted">Catálogo de produtos — clique para ver detalhes, quantidade e adicionais</p>
-  </header>
-
-  @if (erro()) {
-    <p class="alert alert--err">{{ erro() }}</p>
-  }
-  @if (msg()) {
-    <p class="alert">{{ msg() }}</p>
-  }
-
-  @if (grupos().length) {
-    <nav class="shop__cat-nav" aria-label="Ir para categoria">
-      @for (g of grupos(); track g.anchorId) {
-        <button type="button" class="shop__cat-link" (click)="irParaCategoria(g.anchorId)">
-          {{ g.nome }}
+  <div class="shop__hero">
+    <div class="shop__hero-overlay"></div>
+    <div class="shop__hero-content">
+      <p class="shop__tag"><span class="shop__tag-icon" aria-hidden="true">🔥</span> CATÁLOGO NEXION</p>
+      <h1 class="shop__hero-title">
+        <span class="shop__hero-line">SABOR QUE</span>
+        <span class="shop__hero-accent">MARCA</span>
+      </h1>
+      <p class="shop__hero-desc">
+        Monte seu pedido com quantidades e adicionais. Finalize pelo WhatsApp quando estiver pronto.
+      </p>
+      <div class="shop__hero-actions">
+        <button type="button" class="btn btn--primary shop__hero-btn" (click)="irCardapio()">Pedir agora</button>
+        <button type="button" class="btn btn--outline-light shop__hero-btn" (click)="irCardapio()">
+          Ver cardápio
         </button>
-      }
-    </nav>
-  }
+      </div>
+    </div>
+  </div>
 
-  @for (g of grupos(); track g.anchorId) {
+  <div id="cardapio" class="shop__menu-block" tabindex="-1">
+    <header class="shop__menu-head">
+      <h2 class="shop__menu-title">
+        <span class="shop__menu-title-part">NOSSO</span>
+        <span class="shop__menu-title-accent">CARDÁPIO</span>
+      </h2>
+      <p class="shop__menu-sub muted">
+        Escolha seu favorito. Clique no card para ver detalhes, quantidade e adicionais.
+      </p>
+    </header>
+
+    @if (erro()) {
+      <p class="alert alert--err">{{ erro() }}</p>
+    }
+    @if (msg()) {
+      <p class="alert">{{ msg() }}</p>
+    }
+
+    @if (grupos().length) {
+      <div class="shop__filters" role="tablist" aria-label="Filtrar por categoria">
+        <button
+          type="button"
+          class="shop__pill"
+          [class.shop__pill--active]="filtroAtivo(null)"
+          (click)="selecionarFiltro(null)"
+        >
+          Todos
+        </button>
+        @for (g of grupos(); track g.anchorId) {
+          <button
+            type="button"
+            class="shop__pill"
+            [class.shop__pill--active]="filtroAtivo(g.nome)"
+            (click)="selecionarFiltro(g.nome)"
+          >
+            {{ g.nome }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (grupos().length > 1 && filtroCategoria() === null) {
+      <nav class="shop__cat-nav" aria-label="Ir para secção">
+        @for (g of grupos(); track g.anchorId) {
+          <button type="button" class="shop__cat-link" (click)="irParaCategoria(g.anchorId)">
+            {{ g.nome }}
+          </button>
+        }
+      </nav>
+    }
+  </div>
+
+  @for (g of gruposVisiveis(); track g.anchorId) {
     <section
       class="shop__row"
       [id]="g.anchorId"
       [attr.aria-labelledby]="g.titleId"
       tabindex="-1"
     >
-      <h2 class="shop__cat-title" [id]="g.titleId">{{ g.nome }}</h2>
+      <h3 class="shop__cat-title" [id]="g.titleId">{{ g.nome }}</h3>
       <div class="grid">
         @for (p of g.produtos; track p.id) {
           <article class="card">
             <button type="button" class="card__open" (click)="abrirProduto(p)">
-              @if (p.imagem_url) {
-                <img [src]="p.imagem_url" [alt]="p.nome" width="400" height="280" loading="lazy" />
-              } @else {
-                <div class="card__ph"></div>
-              }
+              <div class="card__media">
+                @if (p.imagem_url) {
+                  <img [src]="p.imagem_url" [alt]="p.nome" width="400" height="280" loading="lazy" />
+                } @else {
+                  <div class="card__ph"></div>
+                }
+              </div>
               <div class="card__body">
-                <span class="pill">{{ p.categoria_nome ?? p.categoria ?? 'Geral' }}</span>
-                <h3 class="card__title">{{ p.nome }}</h3>
+                <div class="card__headline">
+                  <h4 class="card__title">{{ p.nome }}</h4>
+                  <span class="card__cat-label">{{ p.categoria_nome ?? p.categoria ?? 'Geral' }}</span>
+                </div>
                 <p class="desc">{{ p.descricao }}</p>
                 @if ((p.adicionais?.length ?? 0) > 0) {
-                  <p class="hint">{{ p.adicionais?.length }} adicional(is) disponível(is)</p>
+                  <p class="hint">{{ p.adicionais?.length }} adicional(is)</p>
                 }
-                <div class="row">
-                  <strong>{{ preco(p) }}</strong>
-                  <span class="btn btn--inline">Ver opções</span>
+                <div class="card__footer">
+                  <span class="card__price">{{ preco(p) }}</span>
+                  <span class="card__pedir">Pedir</span>
                 </div>
               </div>
             </button>

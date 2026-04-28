@@ -57,6 +57,16 @@ export class ShopComponent implements OnInit {
     return [...map.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
   });
 
+  /** `null` = mostrar todas as categorias */
+  readonly filtroCategoria = signal<string | null>(null);
+
+  readonly gruposVisiveis = computed((): GrupoCategoria[] => {
+    const f = this.filtroCategoria();
+    const g = this.grupos();
+    if (f == null) return g;
+    return g.filter((x) => x.nome === f);
+  });
+
   readonly modalProduto = signal<Produto | null>(null);
   /** Por unidade de produto: id do adicional → quantidade (0 = não incluir) */
   readonly adicionalQtd = signal<Record<number, number>>({});
@@ -73,6 +83,18 @@ export class ShopComponent implements OnInit {
     requestAnimationFrame(() => {
       document.getElementById(anchorId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  }
+
+  selecionarFiltro(nome: string | null): void {
+    this.filtroCategoria.set(nome);
+  }
+
+  filtroAtivo(nome: string | null): boolean {
+    return this.filtroCategoria() === nome;
+  }
+
+  irCardapio(): void {
+    document.getElementById('cardapio')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   abrirProduto(p: Produto): void {
