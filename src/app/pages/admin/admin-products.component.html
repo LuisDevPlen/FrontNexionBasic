@@ -37,20 +37,46 @@
       Descrição
       <textarea name="desc" rows="2" [(ngModel)]="descricao"></textarea>
     </label>
-    <div class="grid2">
-      <label>
-        Categoria
-        <select name="categoriaId" [(ngModel)]="categoriaId">
-          <option [ngValue]="''">— nenhuma —</option>
-          @for (c of categorias(); track c.id) {
-            <option [ngValue]="c.id">{{ c.nome }}</option>
-          }
-        </select>
-      </label>
-      <label>
-        URL da imagem
-        <input type="url" name="img" [(ngModel)]="imagem_url" />
-      </label>
+    <label>
+      Categoria
+      <select name="categoriaId" [(ngModel)]="categoriaId">
+        <option [ngValue]="''">— nenhuma —</option>
+        @for (c of categorias(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nome }}</option>
+        }
+      </select>
+    </label>
+
+    <div class="img-field">
+      <span class="img-field__label">Imagem do produto</span>
+      <p class="img-field__hint muted">
+        Fotos JPEG/PNG/WebP são redimensionadas automaticamente para a web. GIF até 800 KB.
+      </p>
+      <div class="img-field__actions">
+        <input
+          #fileImg
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          class="visually-hidden"
+          (change)="onImageFile($event)"
+        />
+        <button
+          type="button"
+          class="btn btn--ghost"
+          (click)="fileImg.click()"
+          [disabled]="imagemLendo()"
+        >
+          {{ imagemLendo() ? 'Carregando…' : 'Escolher imagem' }}
+        </button>
+        @if (imagem_url) {
+          <button type="button" class="btn btn--ghost" (click)="clearImage()">Remover imagem</button>
+        }
+      </div>
+      @if (imagem_url) {
+        <div class="img-field__preview">
+          <img [src]="imagem_url" alt="Pré-visualização" />
+        </div>
+      }
     </div>
     @if (adicionais().length) {
       <fieldset class="checks">
