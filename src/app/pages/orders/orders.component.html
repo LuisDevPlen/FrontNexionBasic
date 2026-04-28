@@ -8,6 +8,7 @@
   @if (!pedidos().length && !erro()) {
     <p class="muted">Nenhum pedido ainda.</p>
   } @else {
+    <div class="table-responsive">
     <table class="table">
       <thead>
         <tr>
@@ -32,6 +33,7 @@
         }
       </tbody>
     </table>
+    </div>
   }
 
   <p class="muted"><a routerLink="/loja">Continuar comprando</a></p>

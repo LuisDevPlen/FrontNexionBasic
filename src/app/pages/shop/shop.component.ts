@@ -135,6 +135,26 @@ export class ShopComponent implements OnInit {
     el.value = String(q);
   }
 
+  /** Botões − / + no modal (telemóveis não mostram setas do input number) */
+  deltaModalQtd(delta: number): void {
+    const cur = this.modalQtd();
+    const next = Math.min(9999, Math.max(1, cur + delta));
+    this.modalQtd.set(next);
+  }
+
+  deltaAdicionalQtd(id: number, delta: number): void {
+    const cur = this.adicionalQtd()[id] ?? 0;
+    let v = cur + delta;
+    v = Math.min(999, Math.max(0, Math.floor(v)));
+    const next = { ...this.adicionalQtd() };
+    if (v <= 0) {
+      delete next[id];
+    } else {
+      next[id] = v;
+    }
+    this.adicionalQtd.set(next);
+  }
+
   preco(p: Produto): string {
     return Number(p.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }

@@ -1,5 +1,6 @@
 .table {
   width: 100%;
+  min-width: 520px;
   border-collapse: collapse;
   margin-top: 1rem;
 }
@@ -98,4 +99,57 @@
   gap: 1rem;
   margin-top: 1.25rem;
   flex-wrap: wrap;
+}
+
+section h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .table {
+    min-width: 0;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    white-space: nowrap;
+  }
+
+  .qty {
+    min-width: 3.25rem;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .foot .btn--primary {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+
+  .radio-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .radio-label {
+    min-height: 44px;
+  }
 }

@@ -29,3 +29,24 @@ input {
   margin-top: 1rem;
   text-align: center;
 }
+
+@media (max-width: 640px) {
+  .panel {
+    margin: 1rem auto;
+    padding-inline: max(0.75rem, env(safe-area-inset-left))
+      max(0.75rem, env(safe-area-inset-right));
+  }
+
+  input {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+}

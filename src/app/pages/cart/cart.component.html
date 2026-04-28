@@ -11,6 +11,7 @@
   @if (!itens().length && !erro()) {
     <p class="muted">Seu carrinho está vazio. <a routerLink="/loja">Ver loja</a></p>
   } @else {
+    <div class="table-responsive">
     <table class="table">
       <thead>
         <tr>
@@ -50,6 +51,7 @@
         }
       </tbody>
     </table>
+    </div>
 
     <div class="checkout-block">
       <h2 class="checkout-block__title">Entrega</h2>

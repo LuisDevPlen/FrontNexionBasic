@@ -116,56 +116,107 @@
   <div class="modal-backdrop" (click)="fecharModal()"></div>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <button type="button" class="modal__close" (click)="fecharModal()" aria-label="Fechar">×</button>
-    <h2 id="modal-title">{{ p.nome }}</h2>
-    <p class="muted">{{ p.descricao }}</p>
-    <p class="modal__base">Preço base (unidade): <strong>{{ preco(p) }}</strong></p>
 
-    <label class="modal__qty">
-      Quantidade do produto
-      <input
-        type="number"
-        min="1"
-        max="9999"
-        step="1"
-        [value]="modalQtd()"
-        (input)="onModalQtdInput($event)"
-      />
-    </label>
+    <div class="modal__scroll">
+      <h2 id="modal-title">{{ p.nome }}</h2>
+      <p class="muted">{{ p.descricao }}</p>
+      <p class="modal__base">Preço base (unidade): <strong>{{ preco(p) }}</strong></p>
 
-    @if (p.adicionais?.length) {
-      <fieldset class="modal__extras">
-        <legend>Adicionais por unidade do produto (quantidade cada)</legend>
-        @for (a of p.adicionais; track a.id) {
-          <div class="modal__adic-row">
-            <span class="modal__adic-name">{{ a.nome }}</span>
-            <span class="muted">+{{ precoAdicional(a) }}/un.</span>
-            <input
-              type="number"
-              min="0"
-              max="999"
-              step="1"
-              class="modal__adic-qty"
-              [value]="qtdAdicional(a.id)"
-              (input)="onAdicionalQtd(a.id, $event)"
-              title="Quantidade deste adicional por unidade do produto"
-            />
-          </div>
-        }
-      </fieldset>
-    } @else {
-      <p class="muted">Este produto não tem adicionais cadastrados.</p>
-    }
+      <label class="modal__qty">
+        Quantidade do produto
+        <div class="modal__stepper">
+          <button
+            type="button"
+            class="modal__step-btn"
+            aria-label="Diminuir quantidade"
+            [disabled]="modalQtd() <= 1"
+            (click)="deltaModalQtd(-1)"
+          >
+            −
+          </button>
+          <input
+            type="number"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            min="1"
+            max="9999"
+            step="1"
+            class="modal__step-input"
+            [value]="modalQtd()"
+            (input)="onModalQtdInput($event)"
+          />
+          <button
+            type="button"
+            class="modal__step-btn"
+            aria-label="Aumentar quantidade"
+            [disabled]="modalQtd() >= 9999"
+            (click)="deltaModalQtd(1)"
+          >
+            +
+          </button>
+        </div>
+      </label>
 
-    <div class="modal__total">
-      <span>Total deste pedido no carrinho</span>
-      <strong>{{ totalModal() }}</strong>
+      @if (p.adicionais?.length) {
+        <fieldset class="modal__extras">
+          <legend>Adicionais por unidade do produto (quantidade cada)</legend>
+          @for (a of p.adicionais; track a.id) {
+            <div class="modal__adic-row">
+              <div class="modal__adic-meta">
+                <span class="modal__adic-name">{{ a.nome }}</span>
+                <span class="muted">+{{ precoAdicional(a) }}/un.</span>
+              </div>
+              <div class="modal__stepper modal__stepper--compact">
+                <button
+                  type="button"
+                  class="modal__step-btn"
+                  [attr.aria-label]="'Diminuir ' + a.nome"
+                  [disabled]="qtdAdicional(a.id) <= 0"
+                  (click)="deltaAdicionalQtd(a.id, -1)"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  max="999"
+                  step="1"
+                  class="modal__adic-qty modal__step-input"
+                  [value]="qtdAdicional(a.id)"
+                  (input)="onAdicionalQtd(a.id, $event)"
+                  title="Quantidade deste adicional por unidade do produto"
+                />
+                <button
+                  type="button"
+                  class="modal__step-btn"
+                  [attr.aria-label]="'Aumentar ' + a.nome"
+                  [disabled]="qtdAdicional(a.id) >= 999"
+                  (click)="deltaAdicionalQtd(a.id, 1)"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          }
+        </fieldset>
+      } @else {
+        <p class="muted">Este produto não tem adicionais cadastrados.</p>
+      }
     </div>
 
-    <div class="modal__actions">
-      <button type="button" class="btn btn--ghost" (click)="fecharModal()">Cancelar</button>
-      <button type="button" class="btn btn--primary" (click)="confirmarAoCarrinho()">
-        Adicionar ao carrinho
-      </button>
+    <div class="modal__footer">
+      <div class="modal__total">
+        <span>Total deste pedido no carrinho</span>
+        <strong>{{ totalModal() }}</strong>
+      </div>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost" (click)="fecharModal()">Cancelar</button>
+        <button type="button" class="btn btn--primary" (click)="confirmarAoCarrinho()">
+          Adicionar ao carrinho
+        </button>
+      </div>
     </div>
   </div>
 }
