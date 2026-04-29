@@ -1,3 +1,52 @@
+.auto-print-row {
+  margin: 1rem 0 0.5rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.auto-print-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+
+  &--disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+}
+
+.auto-print-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  max-width: 44rem;
+}
+
+.sound-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.sound-test-btn {
+  flex-shrink: 0;
+}
+
+.alert--new-order {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #bbf7d0;
+  font-size: 0.95rem;
+}
+
+.alert--new-order__sep {
+  font-weight: normal;
+  opacity: 0.75;
+}
+
 .admin-nav {
   display: flex;
   flex-wrap: wrap;
@@ -44,4 +93,136 @@
 .btn--sm {
   padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
+}
+
+.print-ticket {
+  display: none;
+}
+
+@media print {
+  .print-ticket {
+    display: block !important;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 10pt;
+    line-height: 1.35;
+    color: #000;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-ticket__inner {
+    max-width: 72mm;
+    margin: 0 auto;
+    padding: 0.25rem 0;
+  }
+
+  .print-ticket__id {
+    font-weight: 700;
+    font-size: 12pt;
+    margin: 0;
+    text-align: center;
+  }
+
+  .print-ticket__date {
+    margin: 0.15rem 0 0;
+    font-size: 9pt;
+    color: #333;
+    text-align: center;
+  }
+
+  .print-ticket__sep {
+    border: none;
+    border-top: 1px dashed #999;
+    margin: 0.5rem 0;
+
+    &--strong {
+      border-top-style: solid;
+      border-top-color: #000;
+      margin-top: 0.65rem;
+    }
+  }
+
+  .print-ticket__block {
+    margin: 0.25rem 0;
+  }
+
+  .print-ticket__line {
+    margin: 0.1rem 0;
+    word-break: break-word;
+  }
+
+  .print-ticket__muted {
+    font-size: 9pt;
+    color: #444;
+  }
+
+  .print-ticket__label {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0.35rem 0 0.2rem;
+    color: #333;
+  }
+
+  .print-ticket__addr {
+    margin: 0 0 0.15rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 10pt;
+  }
+
+  .print-ticket__item {
+    margin: 0.45rem 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px dotted #bbb;
+
+    &:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  .print-ticket__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .print-ticket__qty-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+  }
+
+  .print-ticket__price {
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .print-ticket__extra {
+    margin: 0.15rem 0 0 0.35rem;
+    font-size: 9pt;
+    color: #222;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .print-ticket__extra-val {
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .print-ticket__total-line {
+    font-size: 11pt;
+    font-weight: 700;
+    margin-top: 0.15rem;
+  }
+
+  .admin-page > *:not(.print-ticket) {
+    display: none !important;
+  }
 }

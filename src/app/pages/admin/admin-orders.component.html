@@ -1,4 +1,56 @@
 <section class="admin-page">
+  @if (printTicket(); as t) {
+    <div class="print-ticket" aria-hidden="true">
+      <div class="print-ticket__inner">
+        <p class="print-ticket__id">Pedido #{{ t.id }}</p>
+        <p class="print-ticket__date">{{ t.created_at | date: 'dd/MM/yyyy HH:mm' : '' : 'pt-BR' }}</p>
+
+        <div class="print-ticket__sep"></div>
+
+        @if (t.usuario_nome || t.usuario_email) {
+          <div class="print-ticket__block">
+            @if (t.usuario_nome) {
+              <p class="print-ticket__line">{{ t.usuario_nome }}</p>
+            }
+            @if (t.usuario_email) {
+              <p class="print-ticket__line print-ticket__muted">{{ t.usuario_email }}</p>
+            }
+          </div>
+        }
+
+        <p class="print-ticket__label">Entrega</p>
+        <p class="print-ticket__addr">{{ t.endereco_entrega?.trim() || '—' }}</p>
+
+        @if (t.itens.length) {
+          <div class="print-ticket__sep"></div>
+          <p class="print-ticket__label">Itens</p>
+          @for (item of t.itens; track item.id) {
+            <div class="print-ticket__item">
+              <div class="print-ticket__row">
+                <span class="print-ticket__qty-name">{{ item.quantidade }}× {{ item.produto_nome }}</span>
+                <span class="print-ticket__price">{{ itemSubtotalFmt(item) }}</span>
+              </div>
+              @for (ad of item.adicionais ?? []; track ad.id) {
+                <p class="print-ticket__extra">
+                  + {{ ad.nome }} <span class="print-ticket__extra-val">{{ adicionalSubtotalFmt(item, ad) }}</span>
+                </p>
+              }
+              @if (subtotalExtrasAgregados(item); as subEx) {
+                <p class="print-ticket__extra">+ Extras <span class="print-ticket__extra-val">{{ subEx }}</span></p>
+              }
+            </div>
+          }
+        }
+
+        <div class="print-ticket__sep print-ticket__sep--strong"></div>
+        <div class="print-ticket__row print-ticket__total-line">
+          <span>{{ labelForma(t.forma_pagamento) }}</span>
+          <span>{{ fmt(t.total) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
   <nav class="admin-nav">
     <a routerLink="/admin/categorias" routerLinkActive="active">Categorias</a>
     <a routerLink="/admin/adicionais" routerLinkActive="active">Adicionais</a>
@@ -8,7 +60,54 @@
   </nav>
 
   <h1>Gestão de pedidos</h1>
-  <p class="muted">Aprove ou rejeite pedidos pendentes</p>
+  <p class="muted">
+    Novos pedidos chegam por e-mail. Use <strong>Imprimir</strong> para a comanda manual. Aprove ou rejeite pedidos
+    pendentes.
+  </p>
+  <div class="auto-print-row">
+    @if (!lojaConfigApiOk()) {
+      <p class="alert alert--err">
+        O servidor da API não expõe <code>/api/loja-config</code> (404). Faça
+        <strong>deploy de novo</strong> do projeto <code>BackEndNexion</code> com o código atual e confirme que a
+        migração SQL da tabela <code>loja_config</code> foi aplicada na base.
+      </p>
+    }
+    <label
+      class="auto-print-label"
+      [class.auto-print-label--disabled]="configSaving() || !lojaConfigApiOk()"
+    >
+      <input
+        type="checkbox"
+        [checked]="imprimirPedidoAutomatico()"
+        [disabled]="configSaving() || !lojaConfigApiOk()"
+        (change)="onImprimirAutomaticoToggle($any($event.target).checked)"
+      />
+      Imprimir automaticamente pedidos novos (guardado na base; a lista é atualizada a cada 3&nbsp;s)
+    </label>
+    <p class="muted auto-print-hint">
+      Quando ativo, após o cliente finalizar (e o e-mail ser enviado), esta página aberta no PC da loja dispara a
+      impressão dos pedidos novos. O navegador pode pedir confirmação na impressora.
+    </p>
+    <p class="muted auto-print-hint sound-row">
+      <strong>Alerta sonoro:</strong> a cada ~3&nbsp;s tocam bipes enquanto houver pedido novo
+      <strong>pendente</strong>; para quando você <strong>aprovar</strong> ou <strong>rejeitar</strong>. Clique em
+      <strong>Testar som</strong> ou na página uma vez para desbloquear o áudio.
+      <button type="button" class="btn btn--ghost btn--sm sound-test-btn" (click)="testarSomPedido()">
+        Testar som
+      </button>
+    </p>
+  </div>
+
+  @if (alertaNovosPedidos().length) {
+    <p class="alert alert--new-order" role="status" aria-live="polite">
+      Pedido(s) pendente(s) — aguardando ação:
+      @for (id of alertaNovosPedidos(); track id) {
+        <strong>#{{ id }}</strong>@if (!$last) {
+          <span class="alert--new-order__sep"> · </span>
+        }
+      }
+    </p>
+  }
 
   @if (erro()) {
     <p class="alert alert--err">{{ erro() }}</p>
@@ -42,6 +141,14 @@
           <td>{{ fmt(p.total) }}</td>
           <td>{{ p.created_at | date: 'short' }}</td>
           <td class="actions">
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              [disabled]="printBusyId() === p.id"
+              (click)="printPedido(p.id)"
+            >
+              {{ printBusyId() === p.id ? '…' : 'Imprimir' }}
+            </button>
             @if (p.status === 'pendente') {
               <button
                 type="button"
@@ -59,8 +166,6 @@
               >
                 Rejeitar
               </button>
-            } @else {
-              <span class="muted">—</span>
             }
           </td>
         </tr>
